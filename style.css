@@ -1,0 +1,74 @@
+/* Sidebar Search and Accordion Styling */
+.sidebar-search-container {
+    padding: 0 1rem 0.75rem 1rem;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 0.5rem;
+}
+
+#sidebar-search {
+    width: 100%;
+    padding: 0.45rem 0.75rem;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    font-size: 0.85rem;
+    box-sizing: border-box;
+    outline: none;
+}
+
+.book-group {
+    border-bottom: 1px solid rgba(0,0,0,0.03);
+}
+
+[data-theme="dark"] .book-group {
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+
+.book-toggle {
+    padding: 0.75rem 1.5rem;
+    cursor: pointer;
+    font-weight: 600;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: transparent;
+    transition: background 0.2s;
+}
+
+.book-toggle:hover {
+    background-color: rgba(0,0,0,0.02);
+}
+
+[data-theme="dark"] .book-toggle:hover {
+    background-color: rgba(255,255,255,0.02);
+}
+
+.book-toggle::after {
+    content: '▸';
+    font-size: 0.8rem;
+    transition: transform 0.2s;
+}
+
+.book-group.expanded .book-toggle::after {
+    transform: rotate(90deg);
+}
+
+.chapters-list {
+    display: none;
+    background-color: rgba(0,0,0,0.015);
+}
+
+[data-theme="dark"] .chapters-list {
+    background-color: rgba(255,255,255,0.01);
+}
+
+.book-group.expanded .chapters-list {
+    display: block;
+}
+
+/* Tweak nav-item padding slightly for indented sub-menu feel */
+.chapters-list .nav-item {
+    padding: 0.6rem 2rem;
+    font-size: 0.95rem;
+}
