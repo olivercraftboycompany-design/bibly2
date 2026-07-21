@@ -1,3 +1,6 @@
+// This file holds all the text for the dashboard.
+// Ensure every verse is wrapped in quotes "..." and separated by a comma.
+
 const bibleData = [
   {
     book: "Genesis",
@@ -23,3 +26,19 @@ const bibleData = [
     ]
   }
   
+  // COPY THE BLOCK BELOW TO ADD A NEW BOOK:
+  /*
+  ,{
+    book: "Exodus",
+    chapters: [
+      {
+        chapter: 1,
+        verses: [
+          "Paste verse 1 here...",
+          "Paste verse 2 here..."
+        ]
+      }
+    ]
+  }
+  */
+];
