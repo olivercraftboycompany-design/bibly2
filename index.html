@@ -1,345 +1,511 @@
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Web Bible Reader</title>
+
     <style>
+
         /* CSS Styling for a Clean, Modern UI */
+
         :root {
+
             --bg-color: #fcfcfc;
+
             --text-main: #333;
+
             --accent-color: #2c3e50;
+
             --sidebar-bg: #f4f4f4;
+
             --border-color: #e0e0e0;
+
         }
+
+
 
         body {
+
             margin: 0;
+
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
             background-color: var(--bg-color);
+
             color: var(--text-main);
+
             display: flex;
+
             flex-direction: column;
+
             height: 100vh;
+
         }
+
+
 
         /* Top Navigation Bar */
+
         header {
+
             background-color: var(--accent-color);
+
             color: white;
+
             padding: 1rem 2rem;
+
             display: flex;
+
             justify-content: space-between;
+
             align-items: center;
+
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            z-index: 10;
+
         }
+
+
 
         header h1 {
+
             margin: 0;
+
             font-size: 1.5rem;
+
             font-weight: 600;
+
         }
+
+
 
         #search-bar {
+
             padding: 0.5rem 1rem;
+
             border-radius: 20px;
+
             border: none;
+
             width: 300px;
+
             font-size: 1rem;
+
             outline: none;
+
         }
+
+
 
         /* Main Layout */
+
         .container {
+
             display: flex;
+
             flex: 1;
+
             overflow: hidden;
+
         }
+
+
 
         /* Sidebar for Navigation */
+
         aside {
+
             width: 250px;
+
             background-color: var(--sidebar-bg);
+
             border-right: 1px solid var(--border-color);
+
             overflow-y: auto;
+
+            padding: 1rem 0;
+
         }
 
-        /* Accordion Styles */
-        .book-group {
-            border-bottom: 1px solid #e2e2e2;
-        }
 
-        .book-toggle {
-            padding: 1rem 1.5rem;
-            font-weight: 600;
-            cursor: pointer;
-            background-color: var(--sidebar-bg);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: background 0.2s;
-        }
-
-        .book-toggle:hover {
-            background-color: #e8e8e8;
-        }
-
-        .book-toggle::after {
-            content: '▼';
-            font-size: 0.7rem;
-            transition: transform 0.2s;
-        }
-
-        .book-group.expanded .book-toggle::after {
-            transform: rotate(-180deg);
-        }
-
-        .chapters-list {
-            display: none;
-            background-color: #fff;
-        }
-
-        .book-group.expanded .chapters-list {
-            display: block;
-        }
 
         .nav-item {
-            padding: 0.7rem 1.5rem 0.7rem 2.5rem;
+
+            padding: 0.8rem 1.5rem;
+
             cursor: pointer;
+
             transition: background 0.2s;
-            font-weight: 400;
-            font-size: 0.95rem;
+
+            font-weight: 500;
+
         }
+
+
 
         .nav-item:hover {
-            background-color: #f0f0f0;
+
+            background-color: #e2e2e2;
+
         }
+
+
 
         .nav-item.active {
-            background-color: #e2e2e2;
+
+            background-color: #ddd;
+
             border-left: 4px solid var(--accent-color);
-            padding-left: calc(2.5rem - 4px);
-            font-weight: 600;
+
         }
+
+
 
         /* Reading Area */
+
         main {
+
             flex: 1;
+
             padding: 2rem 10%;
+
             overflow-y: auto;
-            font-family: "Georgia", serif; 
+
+            font-family: "Georgia", serif; /* Serif font for better reading */
+
             line-height: 1.8;
+
             font-size: 1.2rem;
-            scroll-behavior: smooth;
+
         }
+
+
 
         .book-title {
+
             font-size: 2.5rem;
+
             margin-bottom: 0.5rem;
+
             font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+
             color: var(--accent-color);
+
         }
+
+
 
         .verse-container {
+
             margin-bottom: 1rem;
+
         }
+
+
 
         .verse-num {
+
             font-size: 0.8em;
+
             font-weight: bold;
+
             color: #888;
+
             margin-right: 8px;
+
             vertical-align: super;
+
         }
+
+
 
         /* Highlight for search results */
+
         .highlight {
+
             background-color: #ffeaa7;
+
             padding: 0 3px;
+
             border-radius: 3px;
+
         }
+
+
 
         .search-results-title {
+
             font-family: -apple-system, sans-serif;
+
             border-bottom: 2px solid var(--border-color);
+
             padding-bottom: 10px;
+
             margin-bottom: 20px;
+
         }
-        
-        .search-result-link {
-            cursor: pointer;
-            text-decoration: underline;
-            color: var(--accent-color);
-        }
-        
-        .search-result-link:hover {
-            color: #555;
-        }
+
     </style>
+
 </head>
+
 <body>
 
+
+
     <header>
+
         <h1>Bible Reader</h1>
+
         <input type="text" id="search-bar" placeholder="Search verses or keywords...">
+
     </header>
 
+
+
     <div class="container">
-        <aside id="sidebar"></aside>
+
+        <aside id="sidebar">
+
+            </aside>
+
+
 
         <main id="reader-view">
+
             <h2 style="font-family: sans-serif; color: #888; text-align: center; margin-top: 50px;">
+
                 Select a chapter from the sidebar to begin reading.
+
             </h2>
+
         </main>
+
     </div>
+
+
 
     <script src="bible-data.js"></script>
 
+
+
     <script>
+
         const sidebar = document.getElementById('sidebar');
+
         const readerView = document.getElementById('reader-view');
+
         const searchBar = document.getElementById('search-bar');
 
-        // 1. Initialize the sidebar navigation with Book -> Chapter accordion
+
+
+        // Function to initialize the sidebar navigation
+
         function initNavigation() {
+
             sidebar.innerHTML = '';
-            
-            // Group data by Book
-            const booksMap = {};
-            bibleData.forEach((chapterData) => {
-                if (!booksMap[chapterData.book]) {
-                    booksMap[chapterData.book] = [];
-                }
-                booksMap[chapterData.book].push(chapterData);
-            });
 
-            // Build the UI
-            Object.keys(booksMap).forEach((bookName, index) => {
-                const bookGroup = document.createElement('div');
-                bookGroup.className = 'book-group';
+            
+
+            // Assuming bibleData is loaded from bible-data.js
+
+            bibleData.forEach((chapterData, index) => {
+
+                const navItem = document.createElement('div');
+
+                navItem.className = 'nav-item';
+
+                navItem.textContent = `${chapterData.book} ${chapterData.chapter}`;
+
                 
-                // Open the first book by default
-                if (index === 0) bookGroup.classList.add('expanded');
 
-                const bookToggle = document.createElement('div');
-                bookToggle.className = 'book-toggle';
-                bookToggle.textContent = bookName;
+                navItem.addEventListener('click', () => {
 
-                const chaptersList = document.createElement('div');
-                chaptersList.className = 'chapters-list';
+                    // Remove active class from all, add to current
 
-                // Toggle click event
-                bookToggle.addEventListener('click', () => {
-                    bookGroup.classList.toggle('expanded');
+                    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+
+                    navItem.classList.add('active');
+
+                    
+
+                    displayChapter(chapterData);
+
                 });
 
-                // Add chapters to this book
-                booksMap[bookName].forEach(chapterData => {
-                    const navItem = document.createElement('div');
-                    navItem.className = 'nav-item';
-                    navItem.textContent = `Chapter ${chapterData.chapter}`;
-                    
-                    navItem.addEventListener('click', () => {
-                        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-                        navItem.classList.add('active');
-                        displayChapter(chapterData);
-                    });
-                    
-                    chaptersList.appendChild(navItem);
-                });
+                
 
-                bookGroup.appendChild(bookToggle);
-                bookGroup.appendChild(chaptersList);
-                sidebar.appendChild(bookGroup);
+                sidebar.appendChild(navItem);
+
             });
+
         }
 
-        // 2. Display a specific chapter
+
+
+        // Function to display a specific chapter
+
         function displayChapter(data) {
+
             let html = `<h1 class="book-title">${data.book} ${data.chapter}</h1>`;
+
             
+
             data.verses.forEach((verse, index) => {
+
                 html += `
-                    <div class="verse-container" id="verse-${index + 1}">
+
+                    <div class="verse-container">
+
                         <span class="verse-num">${index + 1}</span>
+
                         <span class="verse-text">${verse}</span>
+
                     </div>
+
                 `;
+
             });
+
             
+
             readerView.innerHTML = html;
-            readerView.scrollTop = 0; // Scroll to top when changing chapters
+
         }
 
-        // 3. Handle searching across all loaded data
+
+
+        // Function to handle searching across all loaded data
+
         function handleSearch(query) {
-            if (!query.trim()) {
-                initNavigation();
-                if (bibleData.length > 0) displayChapter(bibleData[0]); // Reset to first chapter
+
+            if (!query) {
+
+                readerView.innerHTML = '<h2 style="font-family: sans-serif; color: #888; text-align: center; margin-top: 50px;">Select a chapter from the sidebar to begin reading.</h2>';
+
+                document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+
                 return;
+
             }
+
+
 
             const lowerQuery = query.toLowerCase();
+
             let resultsHtml = `<h2 class="search-results-title">Search Results for "${query}"</h2>`;
+
             let matchCount = 0;
 
+
+
             bibleData.forEach(data => {
+
                 data.verses.forEach((verse, index) => {
+
                     if (verse.toLowerCase().includes(lowerQuery)) {
+
                         matchCount++;
+
+                        // Highlight the search term
+
                         const regex = new RegExp(`(${query})`, "gi");
+
                         const highlightedVerse = verse.replace(regex, "<span class='highlight'>$1</span>");
+
                         
-                        // We store the data as JSON in a data attribute so we can open it when clicked
+
                         resultsHtml += `
+
                             <div class="verse-container" style="margin-bottom: 20px;">
-                                <div style="font-size: 0.9em; font-weight: bold; font-family: sans-serif;">
-                                    <span class="search-result-link" onclick='openFromSearch(${JSON.stringify(data.book)}, ${data.chapter})'>
-                                        ${data.book} ${data.chapter}:${index + 1}
-                                    </span>
+
+                                <div style="font-size: 0.9em; color: var(--accent-color); font-weight: bold; font-family: sans-serif;">
+
+                                    ${data.book} ${data.chapter}:${index + 1}
+
                                 </div>
+
                                 <span>${highlightedVerse}</span>
+
                             </div>
+
                         `;
+
                     }
+
                 });
+
             });
 
+
+
             if (matchCount === 0) {
+
                 resultsHtml += `<p style="color: #666;">No results found.</p>`;
+
             }
+
+
 
             readerView.innerHTML = resultsHtml;
+
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+
         }
 
-        // 4. Helper function to open a chapter directly from search results
-        window.openFromSearch = function(bookName, chapterNum) {
-            const targetData = bibleData.find(d => d.book === bookName && d.chapter === chapterNum);
-            if (targetData) {
-                displayChapter(targetData);
-                searchBar.value = ''; // Clear search
-                initNavigation(); // Re-render menu to show active states properly
-            }
-        };
+
 
         // Event listener for the search bar
+
         searchBar.addEventListener('input', (e) => {
+
             handleSearch(e.target.value);
+
         });
 
+
+
         // Initialize the app when the page loads
+
         window.addEventListener('DOMContentLoaded', () => {
+
             if (typeof bibleData !== 'undefined') {
+
                 initNavigation();
-                if(bibleData.length > 0) displayChapter(bibleData[0]);
+
+                // Optionally load the first chapter automatically:
+
+                // if(bibleData.length > 0) displayChapter(bibleData[0]);
+
             } else {
+
                 readerView.innerHTML = '<h2 style="color: red;">Error: Could not load bible-data.js</h2>';
+
             }
+
         });
+
     </script>
+
+    <!-- Inside the <head> tag -->
+
+
+
+
+
+<!-- Right before the closing </body> tag -->
+
+<script src="bible-data.js"></script>
+
+
+
+    <script src="bible-data.js"></script>
+
 </body>
+
 </html>
