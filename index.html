@@ -1,511 +1,378 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Web Bible Reader</title>
-
+    <title>Modern Bible Reader</title>
     <style>
-
-        /* CSS Styling for a Clean, Modern UI */
-
         :root {
-
-            --bg-color: #fcfcfc;
-
-            --text-main: #333;
-
-            --accent-color: #2c3e50;
-
-            --sidebar-bg: #f4f4f4;
-
-            --border-color: #e0e0e0;
-
+            --primary: #2c3e50;
+            --accent: #3498db;
+            --bg-light: #f8f9fa;
+            --text-dark: #2d3436;
+            --text-muted: #636e72;
+            --sidebar-width: 300px;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-
-
 
         body {
-
             margin: 0;
-
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-
-            background-color: var(--bg-color);
-
-            color: var(--text-main);
-
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: white;
+            color: var(--text-dark);
             display: flex;
-
             flex-direction: column;
-
             height: 100vh;
-
         }
 
-
-
-        /* Top Navigation Bar */
-
+        /* Header UI */
         header {
-
-            background-color: var(--accent-color);
-
-            color: white;
-
-            padding: 1rem 2rem;
-
+            background-color: white;
+            padding: 0.75rem 2rem;
             display: flex;
-
             justify-content: space-between;
-
             align-items: center;
-
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-
+            border-bottom: 1px solid #eee;
+            z-index: 100;
         }
-
-
 
         header h1 {
-
-            margin: 0;
-
-            font-size: 1.5rem;
-
-            font-weight: 600;
-
+            font-size: 1.2rem;
+            color: var(--primary);
+            font-weight: 800;
+            letter-spacing: -0.5px;
         }
 
-
+        .search-wrapper {
+            position: relative;
+            width: 350px;
+        }
 
         #search-bar {
-
-            padding: 0.5rem 1rem;
-
-            border-radius: 20px;
-
-            border: none;
-
-            width: 300px;
-
-            font-size: 1rem;
-
+            width: 100%;
+            padding: 10px 15px;
+            border-radius: 10px;
+            border: 1px solid #dfe6e9;
+            background: #f1f2f6;
+            font-size: 0.9rem;
+            transition: all 0.3s;
             outline: none;
-
         }
 
+        #search-bar:focus {
+            background: white;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.1);
+        }
 
-
-        /* Main Layout */
-
+        /* Layout */
         .container {
-
             display: flex;
-
             flex: 1;
-
             overflow: hidden;
-
         }
 
-
-
-        /* Sidebar for Navigation */
-
+        /* Sidebar: Grouped Books & Chapters */
         aside {
-
-            width: 250px;
-
-            background-color: var(--sidebar-bg);
-
-            border-right: 1px solid var(--border-color);
-
+            width: var(--sidebar-width);
+            background-color: var(--bg-light);
+            border-right: 1px solid #eee;
             overflow-y: auto;
-
-            padding: 1rem 0;
-
+            padding: 1rem;
         }
 
-
-
-        .nav-item {
-
-            padding: 0.8rem 1.5rem;
-
-            cursor: pointer;
-
-            transition: background 0.2s;
-
-            font-weight: 500;
-
-        }
-
-
-
-        .nav-item:hover {
-
-            background-color: #e2e2e2;
-
-        }
-
-
-
-        .nav-item.active {
-
-            background-color: #ddd;
-
-            border-left: 4px solid var(--accent-color);
-
-        }
-
-
-
-        /* Reading Area */
-
-        main {
-
-            flex: 1;
-
-            padding: 2rem 10%;
-
-            overflow-y: auto;
-
-            font-family: "Georgia", serif; /* Serif font for better reading */
-
-            line-height: 1.8;
-
-            font-size: 1.2rem;
-
-        }
-
-
-
-        .book-title {
-
-            font-size: 2.5rem;
-
+        .book-group {
             margin-bottom: 0.5rem;
-
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-
-            color: var(--accent-color);
-
+            border-radius: 8px;
+            overflow: hidden;
+            background: white;
+            border: 1px solid #eee;
         }
 
+        .book-header {
+            padding: 12px 15px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s;
+            user-select: none;
+        }
 
+        .book-header:hover {
+            background-color: #f1f2f6;
+        }
 
-        .verse-container {
+        .book-header::after {
+            content: '▼';
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            transition: transform 0.3s;
+        }
 
+        .book-group.active .book-header {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .book-group.active .book-header::after {
+            transform: rotate(180deg);
+            color: white;
+        }
+
+        /* Chapter Grid */
+        .chapter-container {
+            display: none;
+            padding: 10px;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 5px;
+            background: white;
+        }
+
+        .book-group.active .chapter-container {
+            display: grid;
+        }
+
+        .chapter-btn {
+            padding: 8px 0;
+            text-align: center;
+            background: #f8f9fa;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .chapter-btn:hover {
+            background: var(--accent);
+            color: white;
+        }
+
+        .chapter-btn.active {
+            background: var(--accent);
+            color: white;
+            font-weight: bold;
+        }
+
+        /* Reading View */
+        main {
+            flex: 1;
+            overflow-y: auto;
+            padding: 3rem 10%;
+            line-height: 1.8;
+            scroll-behavior: smooth;
+        }
+
+        .reader-inner {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .book-title-hero {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 2rem;
+            color: var(--primary);
+            border-bottom: 2px solid #eee;
+            padding-bottom: 1rem;
+        }
+
+        .verse-block {
             margin-bottom: 1rem;
-
+            font-family: "Georgia", serif;
+            font-size: 1.25rem;
         }
-
-
 
         .verse-num {
-
-            font-size: 0.8em;
-
             font-weight: bold;
-
-            color: #888;
-
-            margin-right: 8px;
-
-            vertical-align: super;
-
+            color: var(--accent);
+            font-size: 0.9rem;
+            margin-right: 10px;
+            vertical-align: top;
         }
 
+        /* Search Results Styles */
+        .search-item {
+            padding: 1.5rem;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
 
+        .search-item:hover {
+            background: #f8f9fa;
+        }
 
-        /* Highlight for search results */
+        .search-ref {
+            font-weight: bold;
+            color: var(--accent);
+            margin-bottom: 5px;
+            display: block;
+        }
 
         .highlight {
-
-            background-color: #ffeaa7;
-
-            padding: 0 3px;
-
+            background: #fff3cd;
+            padding: 2px;
             border-radius: 3px;
-
         }
 
-
-
-        .search-results-title {
-
-            font-family: -apple-system, sans-serif;
-
-            border-bottom: 2px solid var(--border-color);
-
-            padding-bottom: 10px;
-
-            margin-bottom: 20px;
-
-        }
-
+        /* Hide Scrollbars but allow scrolling */
+        aside::-webkit-scrollbar { width: 5px; }
+        aside::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
     </style>
-
 </head>
-
 <body>
 
-
-
     <header>
-
-        <h1>Bible Reader</h1>
-
-        <input type="text" id="search-bar" placeholder="Search verses or keywords...">
-
+        <h1>BIBLE READER</h1>
+        <div class="search-wrapper">
+            <input type="text" id="search-bar" placeholder="Search for keywords or verses...">
+        </div>
     </header>
 
-
-
     <div class="container">
-
         <aside id="sidebar">
-
-            </aside>
-
-
+            <!-- Dynamically generated books and chapters -->
+        </aside>
 
         <main id="reader-view">
-
-            <h2 style="font-family: sans-serif; color: #888; text-align: center; margin-top: 50px;">
-
-                Select a chapter from the sidebar to begin reading.
-
-            </h2>
-
+            <div class="reader-inner" id="content-target">
+                <div style="text-align: center; margin-top: 100px; color: #b2bec3;">
+                    <svg width="64" height="64" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18c-2.305 0-4.408.867-6 2.292m0-14.25v14.25"></path></svg>
+                    <h2>Select a book to begin</h2>
+                </div>
+            </div>
         </main>
-
     </div>
 
-
-
     <script src="bible-data.js"></script>
-
-
 
     <script>
-
         const sidebar = document.getElementById('sidebar');
-
-        const readerView = document.getElementById('reader-view');
-
+        const contentTarget = document.getElementById('content-target');
         const searchBar = document.getElementById('search-bar');
 
+        // 1. Group the flat bibleData by Book Name
+        function groupData() {
+            const grouped = {};
+            bibleData.forEach((item, index) => {
+                if (!grouped[item.book]) {
+                    grouped[item.book] = [];
+                }
+                // Store the original index to make loading easier
+                grouped[item.book].push({ ...item, originalIndex: index });
+            });
+            return grouped;
+        }
 
-
-        // Function to initialize the sidebar navigation
-
+        // 2. Initialize Navigation
         function initNavigation() {
-
+            const grouped = groupData();
             sidebar.innerHTML = '';
 
-            
+            Object.keys(grouped).forEach(bookName => {
+                const bookGroup = document.createElement('div');
+                bookGroup.className = 'book-group';
 
-            // Assuming bibleData is loaded from bible-data.js
-
-            bibleData.forEach((chapterData, index) => {
-
-                const navItem = document.createElement('div');
-
-                navItem.className = 'nav-item';
-
-                navItem.textContent = `${chapterData.book} ${chapterData.chapter}`;
-
+                const header = document.createElement('div');
+                header.className = 'book-header';
+                header.textContent = bookName;
                 
+                const chapterContainer = document.createElement('div');
+                chapterContainer.className = 'chapter-container';
 
-                navItem.addEventListener('click', () => {
-
-                    // Remove active class from all, add to current
-
-                    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-
-                    navItem.classList.add('active');
-
-                    
-
-                    displayChapter(chapterData);
-
+                grouped[bookName].forEach(chapterData => {
+                    const btn = document.createElement('div');
+                    btn.className = 'chapter-btn';
+                    btn.textContent = chapterData.chapter;
+                    btn.onclick = (e) => {
+                        e.stopPropagation();
+                        // Clear active states
+                        document.querySelectorAll('.chapter-btn').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        displayChapter(chapterData);
+                    };
+                    chapterContainer.appendChild(btn);
                 });
 
-                
+                header.onclick = () => {
+                    const isActive = bookGroup.classList.contains('active');
+                    document.querySelectorAll('.book-group').forEach(bg => bg.classList.remove('active'));
+                    if (!isActive) bookGroup.classList.add('active');
+                };
 
-                sidebar.appendChild(navItem);
-
+                bookGroup.appendChild(header);
+                bookGroup.appendChild(chapterContainer);
+                sidebar.appendChild(bookGroup);
             });
-
         }
 
-
-
-        // Function to display a specific chapter
-
+        // 3. Display Chapter
         function displayChapter(data) {
-
-            let html = `<h1 class="book-title">${data.book} ${data.chapter}</h1>`;
-
+            let html = `<h1 class="book-title-hero">${data.book} ${data.chapter}</h1>`;
             
-
             data.verses.forEach((verse, index) => {
-
                 html += `
-
-                    <div class="verse-container">
-
+                    <div class="verse-block">
                         <span class="verse-num">${index + 1}</span>
-
                         <span class="verse-text">${verse}</span>
-
                     </div>
-
                 `;
-
             });
-
             
-
-            readerView.innerHTML = html;
-
+            contentTarget.innerHTML = html;
+            document.getElementById('reader-view').scrollTo(0, 0);
         }
 
-
-
-        // Function to handle searching across all loaded data
-
+        // 4. Handle Search
         function handleSearch(query) {
-
             if (!query) {
-
-                readerView.innerHTML = '<h2 style="font-family: sans-serif; color: #888; text-align: center; margin-top: 50px;">Select a chapter from the sidebar to begin reading.</h2>';
-
-                document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-
+                contentTarget.innerHTML = `<h2>Select a book to begin</h2>`;
                 return;
-
             }
-
-
 
             const lowerQuery = query.toLowerCase();
-
-            let resultsHtml = `<h2 class="search-results-title">Search Results for "${query}"</h2>`;
-
+            let resultsHtml = `<h2 style="color:var(--text-muted)">Search Results for "${query}"</h2>`;
             let matchCount = 0;
 
-
-
-            bibleData.forEach(data => {
-
-                data.verses.forEach((verse, index) => {
-
+            bibleData.forEach((data, bIndex) => {
+                data.verses.forEach((verse, vIndex) => {
                     if (verse.toLowerCase().includes(lowerQuery)) {
-
                         matchCount++;
-
-                        // Highlight the search term
-
-                        const regex = new RegExp(`(${query})`, "gi");
-
-                        const highlightedVerse = verse.replace(regex, "<span class='highlight'>$1</span>");
-
+                        const highlightedVerse = verse.replace(
+                            new RegExp(`(${query})`, "gi"), 
+                            "<span class='highlight'>$1</span>"
+                        );
                         
-
                         resultsHtml += `
-
-                            <div class="verse-container" style="margin-bottom: 20px;">
-
-                                <div style="font-size: 0.9em; color: var(--accent-color); font-weight: bold; font-family: sans-serif;">
-
-                                    ${data.book} ${data.chapter}:${index + 1}
-
-                                </div>
-
-                                <span>${highlightedVerse}</span>
-
+                            <div class="search-item" onclick="loadFromSearch(${bIndex})">
+                                <span class="search-ref">${data.book} ${data.chapter}:${vIndex + 1}</span>
+                                <div>${highlightedVerse}</div>
                             </div>
-
                         `;
-
                     }
-
                 });
-
             });
 
-
-
-            if (matchCount === 0) {
-
-                resultsHtml += `<p style="color: #666;">No results found.</p>`;
-
-            }
-
-
-
-            readerView.innerHTML = resultsHtml;
-
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-
+            contentTarget.innerHTML = matchCount > 0 ? resultsHtml : `<p>No results found for "${query}"</p>`;
         }
 
+        // Helper for search click
+        window.loadFromSearch = (index) => {
+            displayChapter(bibleData[index]);
+            searchBar.value = '';
+        };
 
-
-        // Event listener for the search bar
-
-        searchBar.addEventListener('input', (e) => {
-
-            handleSearch(e.target.value);
-
-        });
-
-
-
-        // Initialize the app when the page loads
+        searchBar.addEventListener('input', (e) => handleSearch(e.target.value));
 
         window.addEventListener('DOMContentLoaded', () => {
-
             if (typeof bibleData !== 'undefined') {
-
                 initNavigation();
-
-                // Optionally load the first chapter automatically:
-
-                // if(bibleData.length > 0) displayChapter(bibleData[0]);
-
             } else {
-
-                readerView.innerHTML = '<h2 style="color: red;">Error: Could not load bible-data.js</h2>';
-
+                contentTarget.innerHTML = '<h2 style="color: red;">Error: bible-data.js not loaded</h2>';
             }
-
         });
-
     </script>
-
-    <!-- Inside the <head> tag -->
-
-
-
-
-
-<!-- Right before the closing </body> tag -->
-
-<script src="bible-data.js"></script>
-
-
-
-    <script src="bible-data.js"></script>
-
 </body>
-
 </html>
